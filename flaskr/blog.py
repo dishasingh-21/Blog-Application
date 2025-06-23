@@ -19,6 +19,25 @@ def index():
     ).fetchall()
     return render_template('blog/index.html', posts=posts, comments=comments)
 
+@bp.route('/<int:id>/post', methods=('GET','POST'))
+@login_required
+def post(id):
+    db=get_db()
+    if request.method == 'POST':
+        comment(id)
+
+    post = db.execute(
+        'SELECT * FROM posts WHERE id=?', (id,)
+    ).fetchone()
+    author = db.execute(
+        'SELECT * FROM user WHERE id=?', (post['author_id'],)
+    ).fetchone()
+    comments=db.execute(
+        'SELECT * FROM comments WHERE post_id=? ORDER BY reacted DESC', (id,)
+    ).fetchall()
+
+    return render_template('blog/post.html', post=post, comments=comments, author=author)
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
@@ -80,7 +99,7 @@ def comment(id):
             (post['id'], g.user['id'], body)
         )
         db.commit()
-        return redirect(url_for('blog.index'))
+        return redirect(url_for('blog.post', id=id))
     
     return render_template('blog/comment.html', post=post)
 
