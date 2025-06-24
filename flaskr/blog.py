@@ -19,6 +19,21 @@ def index():
     ).fetchall()
     return render_template('blog/index.html', posts=posts, comments=comments)
 
+@bp.route('/<int:id>/profile', methods=('GET', 'POST'))
+@login_required
+def profile(id):
+    db=get_db()
+
+    user = db.execute(
+        'SELECT * FROM user WHERE id=?', (id,)
+    ).fetchone()
+    blogs = db.execute(
+        'SELECT body FROM posts WHERE author_id=?', (id,)
+    ).fetchall()
+
+    return render_template('blog/profile.html', user=user, blogs=blogs)
+
+
 @bp.route('/<int:id>/post', methods=('GET','POST'))
 @login_required
 def post(id):
@@ -106,7 +121,7 @@ def comment(id):
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
-    post = get_post(id)
+    posts = get_post(id)
 
     if request.method == 'POST':
         title = request.form['title']
@@ -128,7 +143,7 @@ def update(id):
             db.commit()
             return redirect(url_for('blog.index'))
         
-    return render_template('blog/update.html', post = post)
+    return render_template('blog/update.html', posts=posts, blogs=posts)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required

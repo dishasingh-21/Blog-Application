@@ -22,8 +22,8 @@ def register():
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username) VALUES (?)",
-                    (username,)
+                    "INSERT INTO user (username,fullname, about, email, instagram_id, linkedin_id) VALUES (?,?,?,?,?,?)",
+                    (username,None,None,None,None,None)
                 )
                 db.commit()
                 id = db.execute(
@@ -64,11 +64,33 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            if enter_details(): return redirect(url_for('blog.index'))
+            else: return redirect(url_for('auth.enter_details'))
         
         flash(error)
 
     return render_template('auth/login.html')
+
+@bp.route('/enter-details', methods=('GET','POST'))
+def enter_details():
+    status=False
+    if request.method == 'POST':
+        fullname = request.form['fullname']
+        about = request.form['about'] or None
+        email = request.form['email'] or None
+        instagram_id = request.form['instagram_id'] or None
+        linkedin_id = request.form['linkedin_id'] or None
+        user_id = g.user['id']
+        db=get_db()
+        db.execute(
+            'UPDATE user SET fullname=?, about=?, email=?, instagram_id=?, linkedin_id=? WHERE id=?',
+            (fullname, about, email, instagram_id, linkedin_id, user_id)
+        )
+        db.commit()
+        status = True
+        return redirect(url_for('blog.profile', id=user_id))
+    
+    return status, render_template('auth/enter_details.html')
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -95,6 +117,9 @@ def login_required(view):
         return view(**kwargs)
     
     return wrapped_view
+
+
+
 
 
     

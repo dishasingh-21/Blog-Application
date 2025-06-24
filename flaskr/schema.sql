@@ -5,7 +5,12 @@ DROP TABLE IF EXISTS comments;
 
 CREATE TABLE user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL
+    username TEXT UNIQUE NOT NULL,
+    fullname TEXT,
+    about TEXT,
+    email TEXT UNIQUE,
+    instagram_id TEXT UNIQUE,
+    linkedin_id TEXT UNIQUE
 );
 
 CREATE TABLE pass(
