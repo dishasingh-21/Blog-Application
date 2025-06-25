@@ -10,7 +10,8 @@ CREATE TABLE user(
     about TEXT,
     email TEXT UNIQUE,
     instagram_id TEXT UNIQUE,
-    linkedin_id TEXT UNIQUE
+    linkedin_id TEXT UNIQUE,
+    photo TEXT DEFAULT 'default.png'
 );
 
 CREATE TABLE pass(

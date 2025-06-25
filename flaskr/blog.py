@@ -121,8 +121,7 @@ def comment(id):
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
-    posts = get_post(id)
-
+    post = get_post(id)
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
@@ -143,7 +142,7 @@ def update(id):
             db.commit()
             return redirect(url_for('blog.index'))
         
-    return render_template('blog/update.html', posts=posts, blogs=posts)
+    return render_template('blog/update.html', posts=post, blogs=post, post=post)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required

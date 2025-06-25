@@ -64,7 +64,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            if enter_details(): return redirect(url_for('blog.index'))
+            if has_entered_details(user['id']): return redirect(url_for('blog.index'))
             else: return redirect(url_for('auth.enter_details'))
         
         flash(error)
@@ -73,7 +73,6 @@ def login():
 
 @bp.route('/enter-details', methods=('GET','POST'))
 def enter_details():
-    status=False
     if request.method == 'POST':
         fullname = request.form['fullname']
         about = request.form['about'] or None
@@ -87,10 +86,17 @@ def enter_details():
             (fullname, about, email, instagram_id, linkedin_id, user_id)
         )
         db.commit()
-        status = True
         return redirect(url_for('blog.profile', id=user_id))
     
-    return status, render_template('auth/enter_details.html')
+    return render_template('auth/enter_details.html')
+
+def has_entered_details(id):
+    db=get_db()
+    user = db.execute(
+        'SELECT * FROM user WHERE id=?', (id,)
+    ).fetchone()
+
+    return user and user['fullname']
 
 @bp.before_app_request
 def load_logged_in_user():
