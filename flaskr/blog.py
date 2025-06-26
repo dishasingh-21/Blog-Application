@@ -28,7 +28,7 @@ def profile(id):
         'SELECT * FROM user WHERE id=?', (id,)
     ).fetchone()
     blogs = db.execute(
-        'SELECT body FROM posts WHERE author_id=?', (id,)
+        'SELECT * FROM posts WHERE author_id=?', (id,)
     ).fetchall()
 
     return render_template('blog/profile.html', user=user, blogs=blogs)
@@ -147,7 +147,7 @@ def update(id):
             db.commit()
             return redirect(url_for('blog.index'))
         
-    return render_template('blog/update.html', posts=post, blogs=post)
+    return render_template('blog/update.html', post=post, blogs=post, posts=post)
 
 @bp.route('/<int:id>/update_comment', methods=('GET', 'POST'))
 @login_required
