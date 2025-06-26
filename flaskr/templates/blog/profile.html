@@ -13,13 +13,19 @@
         <span>Email: {{ user['email'] }}</span><br>
     </div>
     <div class="post">
-        <h3>My Blogs</h3>
+        <header>
+            <h3>My Blogs</h3>
+            <div class="action" style="text-align: right;">
+                <a class="action" href="{{url_for('blog.create')}}">+ Create a new blog</a>
+            </div>
+        </header>
         {% for post in blogs %}
             <h4>{{ post['title'] }}</h4>
             {% if g.user['id'] == post['author_id'] %}
                 <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
             {% endif %}
             <p class="body">{{ post['body'] }}</p>
+            <hr>
         {% else %}
             <p>No blogs yet.</p>
         {% endfor %}

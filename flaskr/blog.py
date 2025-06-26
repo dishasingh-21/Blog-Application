@@ -147,7 +147,7 @@ def update(id):
             db.commit()
             return redirect(url_for('blog.index'))
         
-    return render_template('blog/update.html', posts=post, blogs=post, post=post)
+    return render_template('blog/update.html', posts=post, blogs=post)
 
 @bp.route('/<int:id>/update_comment', methods=('GET', 'POST'))
 @login_required
