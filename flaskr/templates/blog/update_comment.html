@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Make changes to your thoughts?{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form>
+    <label for="comment_body">Comment</label>
+    <input type="text" name="comment_body" id="comment_body">
+    <input type="Submit" value="Update">
+</form>
+<div>
+    <header>I want to delete this.</header>
+    <form action="{{ url_for('blog.delete_comment', id=comment['id']) }}" method="post">
+        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+    </form>
+</div>
+{% endblock %}
+

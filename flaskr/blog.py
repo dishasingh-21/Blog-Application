@@ -48,10 +48,15 @@ def post(id):
         'SELECT * FROM user WHERE id=?', (post['author_id'],)
     ).fetchone()
     comments=db.execute(
-        'SELECT * FROM comments WHERE post_id=? ORDER BY reacted DESC', (id,)
+        'SELECT * FROM comments WHERE post_id=?', (id,)
     ).fetchall()
-
-    return render_template('blog/post.html', post=post, comments=comments, author=author)
+    m={}
+    for comment in comments:
+        user = db.execute(
+            'SELECT * FROM user WHERE id=?', (comment['user_id'],)
+        ).fetchone()
+        m[comment['id']] = user['username']
+    return render_template('blog/post.html', post=post, comments=comments, author=author, m=m)
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
@@ -143,6 +148,36 @@ def update(id):
             return redirect(url_for('blog.index'))
         
     return render_template('blog/update.html', posts=post, blogs=post, post=post)
+
+@bp.route('/<int:id>/update_comment', methods=('GET', 'POST'))
+@login_required
+def update_comment(id):
+    db=get_db()
+    comment = db.execute(
+        'SELECT * FROM comments WHERE id=?', (id,)
+    ).fetchone()
+    if request.method=='POST':
+        body = request.form['body']
+        db.execute(
+            'UPDATE comments SET body=?', (body,)
+        )
+        db.commit()
+        return redirect(url_for('blog.post', id=comment['post_id']))
+    
+    return render_template('blog/update_comment.html', comment=comment)
+
+@bp.route('/<int:id>/delete_comment', methods=('POST',))
+@login_required
+def delete_comment(id):
+    db = get_db()
+    comment= db.execute(
+        'SELECT * FROM comments WHERE id=?', (id,)
+    ).fetchone()
+    db.execute(
+        'DELETE FROM comments WHERE id=?', (id,)
+    )
+    db.commit()
+    return redirect(url_for('blog.post', id=comment['post_id']))
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required

@@ -3,6 +3,7 @@
 {% block header %}
     <h1>{% block title %} {{ post['title'] }} {% endblock %}</h1>
     <div class="about">by {{ author['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
+    <a class="action" href="{{ url_for('blog.profile', id=post['author_id']) }}">View Profile</a>
 {% endblock %}
 <hr>
 {% block content %}
@@ -11,18 +12,30 @@
             {% if g.user['id']==post['author_id'] %}
                 <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
             {% endif %}
-            {% if g.user %}
-                <div class="comment-links">
-                    <a class="action" href="{{ url_for('blog.comment', id=post['id']) }}">Add Comment</a>
-                </div>
-            {% endif %}
         </header>
         <p class="body">{{ post['body'] }}</p>
     </article>
     <hr>
+    <h3>Comments</h3>
+    {% if g.user %}
+        <div class="comment-links" style="text-align: right;">
+            <a class="action" href="{{ url_for('blog.comment', id=post['id']) }}">Add Comment</a>
+        </div>
+    {% endif %}
     {% for comment in comments %}
         {% if comment['post_id']==post['id'] %}
-            <p>{{ comment['body'] }}</p>
+            <div>
+                {% if g.user['id']==comment['user_id'] %}
+                <header>
+                    <div class="action" style="text-align: right;">
+                        <a class="action" href="{{ url_for('blog.update_comment', id=comment['id']) }}">Edit</a>
+                    </div> 
+                </header>
+                {% endif %}
+                <span>{{ comment['body'] }}</span>
+                <div class="about" style="text-align: right;"><a class="action" href="{{ url_for('blog.profile', id=comment['user_id']) }}">{{ m[comment['id']] }}</a> | {{ comment['reacted'].strftime('%Y-%m-%d') }}</div>
+            </div>
+            <hr>
         {% endif %}
     {% endfor %}
     <a class="action" href="{{ url_for('blog.index') }}">Go back to main page</a>
