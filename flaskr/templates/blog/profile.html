@@ -19,7 +19,7 @@
     </head>
     <body>
         <h2>{{ user['username'] }}</h2>
-        <img src="{{ url_for('static', filename='uploads/' ~ 'default.png') }}" class="profile-pic">
+        <img src="{{ url_for('static', filename='uploads/' + 'default.png') }}" class="profile-pic">
         <div>
             <span>Full Name: {{ user['fullname'] }}</span><br>
             <span>About Me: {{ user['about'] }}</span><br>
@@ -29,7 +29,9 @@
             <header>
                 <h2>My Blogs</h2>
                 <div class="action" style="text-align: right;">
-                    <a class="action" href="{{url_for('blog.create')}}">+ Create a new blog</a>
+                    {% if g.user['id']==user['id'] %}
+                        <a class="action" href="{{url_for('blog.create')}}">+ Create a new blog</a>
+                    {% endif %}
                 </div>
             </header>
             <hr>

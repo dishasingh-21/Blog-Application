@@ -4,6 +4,7 @@ from flask import(
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from flaskr.db import get_db
+import random
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=('GET','POST'))
@@ -11,6 +12,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        photo = random.choice(['default.png', 'default2.png', 'default3.jpg'])
         db = get_db()
         error = None
 
@@ -22,8 +24,8 @@ def register():
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username,fullname, about, email, instagram_id, linkedin_id) VALUES (?,?,?,?,?,?)",
-                    (username,None,None,None,None,None)
+                    "INSERT INTO user (username,fullname, about, email, instagram_id, linkedin_id, photo) VALUES (?,?,?,?,?,?,?)",
+                    (username,None,None,None,None,None, photo)
                 )
                 db.commit()
                 id = db.execute(

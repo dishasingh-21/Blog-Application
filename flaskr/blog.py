@@ -30,7 +30,7 @@ def profile(id):
     blogs = db.execute(
         'SELECT * FROM posts WHERE author_id=?', (id,)
     ).fetchall()
-
+    print(dict(user))
     return render_template('blog/profile.html', user=user, blogs=blogs)
 
 
