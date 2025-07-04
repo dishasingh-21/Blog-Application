@@ -1,8 +1,9 @@
 import sqlite3
 from datetime import datetime
-
+import csv, os
 import click
 from flask import current_app, g
+
 
 def get_db():
     if 'db' not in g:
@@ -14,7 +15,7 @@ def get_db():
 
     return g.db
 
-def close_db(e=None):
+def close_db(e=None):   
     db = g.pop('db', None)
 
     if db is not None:
@@ -24,6 +25,50 @@ def init_db():
     db = get_db()
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+    with open('data/table_user.csv', newline='', encoding='utf-8') as f:
+        db = get_db()
+        reader = csv.reader(f)
+        columns = next(reader)
+        placeholders = ','.join('?'*len(columns))
+        for row in reader:
+            db.execute(
+                f'INSERT INTO user ({','.join(columns)}) VALUES ({placeholders})', row
+            )
+            db.commit()
+
+    with open('data/table_pass.csv', newline='', encoding='utf-8') as f:
+        db=get_db()
+        reader = csv.reader(f)
+        columns = next(reader)
+        placeholders = ','.join('?'*len(columns))
+        for row in reader:
+            db.execute(
+                f'INSERT INTO pass ({','.join(columns)}) VALUES ({placeholders})', row
+            )
+            db.commit()
+
+    with open('data/table_comments.csv', newline='', encoding='utf-8') as csv_file:
+        db=get_db()
+        reader = csv.reader(csv_file)
+        columns = next(reader)
+        placeholders = ','.join('?'*len(columns))
+        for row in reader:
+            db.execute(
+                f'INSERT INTO comments ({','.join(columns)}) VALUES ({placeholders})', row
+            )
+            db.commit()
+
+    with open('data/MOCK_DATA.csv', newline='', encoding='utf-8') as csv_file:
+        db=get_db()
+        reader = csv.reader(csv_file)
+        columns = next(reader)
+        placeholders = ','.join('?'*len(columns))
+        for row in reader:
+            db.execute(
+                f'INSERT INTO posts({','.join(columns)}) VALUES ({placeholders})', row
+            )
+            db.commit()
+    print('Database populated successfully.')
 
 @click.command('init-db')
 def init_db_command():
