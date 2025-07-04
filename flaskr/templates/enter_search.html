@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>Looking for something?</h1>
+{% endblock %}
+<hr>
+{% block content %}
+    <form method="GET" action="/search">
+        <input type="text" name="q" placeholder="Search here..." required>
+        <button type="submit">Search</button>
+    </form>
+    <hr>
+    <a class="action" href="{{ url_for('blog.index') }}">Go back to main page</a>
+{% endblock %}

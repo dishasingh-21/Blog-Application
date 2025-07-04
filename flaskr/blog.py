@@ -19,6 +19,43 @@ def index():
     ).fetchall()
     return render_template('blog/index.html', posts=posts, comments=comments)
 
+@bp.route('/search', methods=['GET'])
+@login_required
+def search():
+    query = request.args.get('q','').strip()
+    if not query:
+        return render_template('enter_search.html', query=query, results={})
+    
+    db=get_db()
+    results = {
+        'users':db.execute(
+            '''
+            SELECT * FROM user 
+            WHERE username LIKE ? OR fullname LIKE ? OR instagram_id LIKE ? OR linkedin_id LIKE ? OR email LIKE ? OR about LIKE ?
+            ''',
+            (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%')
+        ).fetchall(),
+
+        'blogs': db.execute(
+            '''
+            SELECT * FROM posts
+            WHERE created LIKE ? OR title LIKE ? OR body LIKE?
+            ''',
+            (f'%{query}%', f'%{query}%', f'%{query}%')
+        ).fetchall(),
+
+        'comments': db.execute(
+            '''
+            SELECT * FROM comments
+            WHERE body LIKE ?
+            ''',
+            (f'%{query}%',)
+        ).fetchall(),
+    }
+    db.close()
+
+    return render_template('search.html', query=query, results=results)
+
 @bp.route('/<int:id>/profile', methods=('GET', 'POST'))
 @login_required
 def profile(id):
@@ -38,6 +75,7 @@ def profile(id):
 @login_required
 def post(id):
     db=get_db()
+    highlight = request.args.get('highlight','')
     if request.method == 'POST':
         comment(id)
 
@@ -56,7 +94,7 @@ def post(id):
             'SELECT * FROM user WHERE id=?', (comment['user_id'],)
         ).fetchone()
         m[comment['id']] = user['username']
-    return render_template('blog/post.html', post=post, comments=comments, author=author, m=m)
+    return render_template('blog/post.html', post=post, comments=comments, author=author, m=m, highlight=highlight)
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required

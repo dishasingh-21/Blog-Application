@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>Search Results in</h1>
+{% endblock %}
+
+{% block content %}
+    {% if results %}
+        {% if results.users %}
+            <h2>Users:</h2>
+            <ul>
+            {% for user in results.users %}
+            <div>
+                <li><span>{{user['username']}}</span>
+                <a class="action" href="{{ url_for('blog.profile', id=user['id']) }}">View user >></a></li>
+            </div>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <br>
+        {% if results.blogs %}
+            <h2>Blogs:</h2>
+            <ul>
+            {% for blog in results.blogs %}
+            <div>
+                <li><span>{{ blog['title'] }}</span>
+                <a class="action" href="{{ url_for('blog.post', id=blog['id'], highlight=query)}}">view post >></a></li>
+            </div>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <br>
+        {% if results.comments %}
+            <h2>Comments:</h2>
+            <ul>
+            {% for comment in results.comments %}
+            <div>
+                <li><span>{{comment['body']}}</span>
+                <a class="action" href="{{ url_for('blog.post', id=comment['post_id'], highlight=query) }}">View comment >></a></li>
+            </div>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% else %}
+        <p>query not found.</p>
+    {% endif %}
+    <hr>
+    <div>
+        <a class="action" href="{{ url_for('blog.index') }}">Go back to main page</a>
+    </div>
+{% endblock %}
