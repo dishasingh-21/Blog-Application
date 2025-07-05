@@ -24,7 +24,7 @@
             {% for blog in results.blogs %}
             <div>
                 <li><span>{{ blog['title'] }}</span>
-                <a class="action" href="{{ url_for('blog.post', id=blog['id'], highlight=query)}}">view post >></a></li>
+                <a class="action" href="{{ url_for('blog.post', id=blog['id'], query=query)}}">view post >></a></li>
             </div>
             {% endfor %}
             </ul>
@@ -36,7 +36,7 @@
             {% for comment in results.comments %}
             <div>
                 <li><span>{{comment['body']}}</span>
-                <a class="action" href="{{ url_for('blog.post', id=comment['post_id'], highlight=query) }}">View comment >></a></li>
+                <a class="action" href="{{ url_for('blog.post', id=comment['post_id'], query=query) }}">View comment >></a></li>
             </div>
             {% endfor %}
             </ul>

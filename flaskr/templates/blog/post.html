@@ -13,13 +13,8 @@
                 <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
             {% endif %}
         </header>
-        {% for line in post.body.split('.') %}
-            {% if highlight and highlight.lower() in line.lower() %}
-                <p style="background-color: rgb(226, 192, 255);" class="body">{{ line }}.</p>
-            {% else %}
-                <p class="body">{{ line }}</p>
-            {% endif %}
-        {% endfor %}
+        <br>
+        <p class="body">{{highlighted_post|safe}}</p>
     </article>
     <hr>
     <h3>Comments</h3>

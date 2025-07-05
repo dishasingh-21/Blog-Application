@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 
 from flaskr.db import get_db
 from flaskr.auth import login_required
+import re
 
 bp = Blueprint('blog', __name__)
 @bp.route('/')
@@ -75,7 +76,7 @@ def profile(id):
 @login_required
 def post(id):
     db=get_db()
-    highlight = request.args.get('highlight','')
+    query = request.args.get('query','')
     if request.method == 'POST':
         comment(id)
 
@@ -88,13 +89,18 @@ def post(id):
     comments=db.execute(
         'SELECT * FROM comments WHERE post_id=?', (id,)
     ).fetchall()
+    if query:
+        pattern = re.compile(re.escape(query), re.IGNORECASE)
+        highlighted_post = pattern.sub(lambda m: f'<mark style="background-color: pink; padding: 2px 4px;">{m.group(0)}</mark>', post['body'])
+    else:
+        highlighted_post = post['body']
     m={}
     for comment in comments:
         user = db.execute(
             'SELECT * FROM user WHERE id=?', (comment['user_id'],)
         ).fetchone()
         m[comment['id']] = user['username']
-    return render_template('blog/post.html', post=post, comments=comments, author=author, m=m, highlight=highlight)
+    return render_template('blog/post.html', post=post, comments=comments, author=author, m=m, highlighted_post=highlighted_post )
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
@@ -144,7 +150,6 @@ def comment(id):
     post = db.execute(
         'SELECT * FROM posts WHERE id= ?', (id,)
     ).fetchone()
-
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
 
