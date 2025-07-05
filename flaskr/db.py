@@ -3,7 +3,7 @@ from datetime import datetime
 import csv, os
 import click
 from flask import current_app, g
-
+from werkzeug.security import generate_password_hash
 
 def get_db():
     if 'db' not in g:
@@ -25,6 +25,23 @@ def init_db():
     db = get_db()
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+    
+    with open('data/passwords.csv', 'r', encoding='utf-8', newline='') as input_file:
+        reader = csv.DictReader(input_file)
+
+        with open('data/table_pass.csv','w', encoding='utf-8', newline='') as output_file:
+            fieldnames = [field for field in reader.fieldnames if field!='pass'] + ['password']
+            writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for row in reader:
+                plain_pass = row['pass']
+                hashed_pass = generate_password_hash(plain_pass)
+                del row['pass']
+                row['password'] = hashed_pass
+                writer.writerow(row)
+    print('Passowrds converted to password hashes successfully..')
+
     with open('data/table_user.csv', newline='', encoding='utf-8') as f:
         db = get_db()
         reader = csv.reader(f)

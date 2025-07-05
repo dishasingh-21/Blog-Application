@@ -54,14 +54,16 @@ def login():
         user = db.execute(
             'SELECT * FROM user WHERE username = ?',(username,)
         ).fetchone()
-        
-        Pass = db.execute(
-            'SELECT password FROM pass WHERE id=?', (user['id'],)
-        ).fetchone()[0]
+
         if user is None:
-            error = 'Incorrect username!'
-        elif not check_password_hash(Pass, password):
-            error = 'Incorrect password!'
+            error = "User doesn't exist!"
+        else:
+            Pass = db.execute(
+                'SELECT password FROM pass WHERE id=?', (user['id'],)
+            ).fetchone()[0]
+
+            if not check_password_hash(Pass, password):
+                error = 'Incorrect password!'
         
         if error is None:
             session.clear()
