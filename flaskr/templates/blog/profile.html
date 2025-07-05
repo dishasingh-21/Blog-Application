@@ -25,7 +25,7 @@
             <span>About Me: {{ user['about'] }}</span><br>
             <span>Email: {{ user['email'] }}</span><br>
         </div>
-        <div class="post">
+        <article class="post">
             <header>
                 <h2>My Blogs</h2>
                 <div class="action" style="text-align: right;">
@@ -36,21 +36,24 @@
             </header>
             <hr>
             {% for post in blogs %}
-                <div class="post">
+                <article class="post">
                     <header>
-                    <h3>{{ post['title'] }}</h3>
-                    <div style="text-align: right;">
-                        {% if g.user['id'] == post['author_id'] %}
-                            <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-                        {% endif %}
-                    </div> </header>
+                        <h3>{{ post['title'] }}<br>
+                            <span class="about">by {{ user['username'] }}</span>
+                        </h3>
+                        <div style="text-align: right;">
+                            {% if g.user['id'] == post['author_id'] %}
+                                <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+                            {% endif %}
+                        </div>
+                    </header>
                     <p class="body">{{ post['body'][:50] }}...<a class="action" href="{{ url_for('blog.post', id=post['id']) }}">View full post</a></p>
                 </div>
                 <hr>
             {% else %}
                 <p>No blogs yet.</p>
             {% endfor %}
-        </div>
+        </article>
         <div>
             <h2>Connect with Me:</h2>
             <span>Instagram: {{ user['instagram_id'] }}</span><br>
