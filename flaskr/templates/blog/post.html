@@ -17,7 +17,7 @@
         <p class="body">{{highlighted_post|safe}}</p>
     </article>
     <hr>
-    <h3>Comments</h3>
+    <h3>Comments({{comments|length}})</h3>
     {% if g.user %}
         <div class="comment-links" style="text-align: right;">
             <a class="action" href="{{ url_for('blog.comment', id=post['id']) }}">Add Comment</a>

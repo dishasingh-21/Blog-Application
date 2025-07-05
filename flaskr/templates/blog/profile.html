@@ -27,7 +27,7 @@
         </div>
         <article class="post">
             <header>
-                <h2>My Blogs</h2>
+                <h2>My Blogs({{ blogs|length }})</h2>
                 <div class="action" style="text-align: right;">
                     {% if g.user['id']==user['id'] %}
                         <a class="action" href="{{url_for('blog.create')}}">+ Create a new blog</a>
