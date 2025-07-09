@@ -28,12 +28,6 @@ header .action { display: block; padding: 0.5rem;}
   line-height: 1.6;
   padding: 0.5rem 0;
 }
-.post-body * {
-  max-width: 100% !important;
-  box-sizing: border-box;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
 .post-body img {
   max-width: 100% !important;
   height: auto;
