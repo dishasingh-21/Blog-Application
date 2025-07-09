@@ -35,7 +35,9 @@
                 </div>
             </header>
             <hr>
-            {% for post in blogs %}
+            {% for i in range(blogs|length) %}
+                {% set post=blogs[i] %}
+                {% set blog_body=blog_bodies[i] %}
                 <article class="post">
                     <header>
                         <h3>{{ post['title'] }}<br>
@@ -47,7 +49,7 @@
                             {% endif %}
                         </div>
                     </header>
-                    <p class="body">{{ post['body'][:50] }}...<a class="action" href="{{ url_for('blog.post', id=post['id']) }}">View full post</a></p>
+                    <div class="body">{{ blog_body|striptags|truncate(50) }}...<a class="action" href="{{ url_for('blog.post', id=post['id']) }}">View full post</a></div>
                 </div>
                 <hr>
             {% else %}

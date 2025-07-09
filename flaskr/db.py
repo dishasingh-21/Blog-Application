@@ -82,9 +82,10 @@ def init_db():
         placeholders = ','.join('?'*len(columns))
         for row in reader:
             db.execute(
-                f'INSERT INTO posts({','.join(columns)}) VALUES ({placeholders})', row
+                f'INSERT INTO posts ({','.join(columns)}) VALUES ({placeholders})', row
             )
             db.commit()
+
     print('Database populated successfully.')
 
 @click.command('init-db')

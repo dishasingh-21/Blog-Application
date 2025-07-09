@@ -6,6 +6,7 @@ from werkzeug.exceptions import abort
 from flaskr.db import get_db
 from flaskr.auth import login_required
 import re
+from base64 import b64encode, b64decode
 
 bp = Blueprint('blog', __name__)
 @bp.route('/')
@@ -68,8 +69,12 @@ def profile(id):
     blogs = db.execute(
         'SELECT * FROM posts WHERE author_id=?', (id,)
     ).fetchall()
+    decoded_content=[]
+    for blog in blogs:
+        decoded_content.append(b64decode(blog['body'].encode()).decode())
+
     print(dict(user))
-    return render_template('blog/profile.html', user=user, blogs=blogs)
+    return render_template('blog/profile.html', user=user, blogs=blogs, blog_bodies=decoded_content)
 
 
 @bp.route('/<int:id>/post', methods=('GET','POST'))
@@ -83,6 +88,7 @@ def post(id):
     post = db.execute(
         'SELECT * FROM posts WHERE id=?', (id,)
     ).fetchone()
+    decoded_content = b64decode(post['body'].encode()).decode('utf-8')
     author = db.execute(
         'SELECT * FROM user WHERE id=?', (post['author_id'],)
     ).fetchone()
@@ -91,9 +97,9 @@ def post(id):
     ).fetchall()
     if query:
         pattern = re.compile(re.escape(query), re.IGNORECASE)
-        highlighted_post = pattern.sub(lambda m: f'<mark style="background-color: pink; padding: 2px 4px;">{m.group(0)}</mark>', post['body'])
+        highlighted_post = pattern.sub(lambda m: f'<mark style="background-color: pink; padding: 2px 4px;">{m.group(0)}</mark>', decoded_content)
     else:
-        highlighted_post = post['body']
+        highlighted_post = decoded_content
     m={}
     for comment in comments:
         user = db.execute(
