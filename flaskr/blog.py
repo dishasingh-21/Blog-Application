@@ -208,7 +208,7 @@ def update_comment(id):
     if request.method=='POST':
         body = request.form['body']
         db.execute(
-            'UPDATE comments SET body=?', (body,)
+            'UPDATE comments SET body=? WHERE id=?', (body, comment['id'])
         )
         db.commit()
         return redirect(url_for('blog.post', id=comment['post_id']))
